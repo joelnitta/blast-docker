@@ -1,29 +1,13 @@
-FROM alpine:3.8
+FROM debian:stretch
 
 MAINTAINER Joel Nitta <joelnitta@gmail.com>
 
-####################################################################
-# Application: NCBI BLAST+
-# Version: 2.7.1
-# Description: Finds regions of similarity between biological
-# sequences
-####################################################################
+ENV DEBIAN_FRONTEND noninteractive
 
-ENV APPS_HOME=/apps
-ENV APP_NAME=ncbi-blast
-ENV VERSION=2.7.1
-ENV DEST=$APPS_HOME/$APP_NAME
-
-# Install dependencies
-RUN apk add --update --no-cache python curl
-
-# Install ncbi-blast+
-RUN mkdir -p $DEST && \
-    curl ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/$VERSION/$APP_NAME-$VERSION+-x64-linux.tar.gz \
-      | tar -zxC $DEST
-
-ENV PATH $DEST/bin:$PATH
+RUN apt-get update && apt-get install -y \
+  ncbi-blast+=2.6.0-1 \
+  && apt-get clean && apt-get purge
 
 WORKDIR /home
 
-CMD ["bash"]
+ENTRYPOINT /bin/bash
